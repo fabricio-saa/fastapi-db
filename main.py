@@ -51,3 +51,9 @@ def read_heroes(
     heroes = session.exec(select(Hero).offset(offset).limit(limit)).all()
     return heroes
 
+@app.get('/heroes/{hero_id}')
+def read_hero(hero_id: int, session: SessionDep):
+    hero = session.get(Hero, hero_id)
+    if not hero:
+        raise HTTPException(status_code=404, detail='Hero not found')
+    return hero
