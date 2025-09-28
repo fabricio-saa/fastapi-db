@@ -41,3 +41,13 @@ def create_hero(hero: Hero, session: Session) -> Hero:
     session.refresh(hero)
     return hero
 
+
+@app.get('/heroes/')
+def read_heroes(
+    session: SessionDep,
+    offset: int = 0,
+    limit: Annotated[int, Query(le=100)] = 100
+):
+    heroes = session.exec(select(Hero).offset(offset).limit(limit)).all()
+    return heroes
+
