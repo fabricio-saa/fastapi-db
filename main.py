@@ -8,12 +8,13 @@ class HeroBase(SQLModel):
     age: int | None = Field(default=None, index=True)
 
 
-class Hero(SQLModel, table=True):
+class Hero(HeroBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    name: str = Field(index=True)
-    age: int | None = Field(default=None, index=True)
     secret_name: str
 
+
+class HeroPublic(HeroBase):
+    id: int
 
 sqlite_file_name = "database.db"
 sqlite_url = f'sqlite:///{sqlite_file_name}'
