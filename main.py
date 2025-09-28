@@ -61,7 +61,7 @@ def create_hero(hero: HeroCreate, session: SessionDep) -> Hero:
     return db_hero
 
 
-@app.get('/heroes/')
+@app.get('/heroes/', response_model=list[HeroPublic])
 def read_heroes(
     session: SessionDep,
     offset: int = 0,
