@@ -52,7 +52,7 @@ def on_startup():
     create_db_and_tables()
 
 
-@app.post('/heroes/')
+@app.post('/heroes/', response_model=HeroPublic)
 def create_hero(hero: HeroCreate, session: SessionDep) -> Hero:
     db_hero = Hero.model_validate(hero)
     session.add(db_hero)
