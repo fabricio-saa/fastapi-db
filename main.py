@@ -32,3 +32,12 @@ app = FastAPI()
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+
+
+@app.post('/heroes/')
+def create_hero(hero: Hero, session: Session) -> Hero:
+    session.add(hero)
+    session.commit()
+    session.refresh(hero)
+    return hero
+
