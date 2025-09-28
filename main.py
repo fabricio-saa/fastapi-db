@@ -53,11 +53,12 @@ def on_startup():
 
 
 @app.post('/heroes/')
-def create_hero(hero: Hero, session: SessionDep) -> Hero:
-    session.add(hero)
+def create_hero(hero: HeroCreate, session: SessionDep) -> Hero:
+    db_hero = Hero.model_validate(hero)
+    session.add(db_hero)
     session.commit()
-    session.refresh(hero)
-    return hero
+    session.refresh(db_hero)
+    return db_hero
 
 
 @app.get('/heroes/')
