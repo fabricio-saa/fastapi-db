@@ -1,4 +1,10 @@
 from sqlmodel import Field, SQLModel, Relationship
+from typing import Optional
+
+
+class Team(SQLModel, table=True):
+    name: str = Field(index=True)
+    heroes: list["Hero"] = Relationship(back_populates='team')
 
 
 class HeroBase(SQLModel):
@@ -9,6 +15,8 @@ class HeroBase(SQLModel):
 class Hero(HeroBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     secret_name: str
+    team_id: Optional[int] = Field(default=None, foreign_key='team.id')
+    team: Optional[Team] = Relationship(back_populates='heroes')
 
 
 class HeroPublic(HeroBase):
@@ -24,7 +32,3 @@ class HeroUpdate(HeroBase):
     age: int | None = None
 
 
-
-class Team(SQLModel, table=True):
-    name: str = Field(index=True)
-    heroes: list[Hero] = Relationship(back_populates='team')
