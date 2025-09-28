@@ -16,6 +16,17 @@ class Hero(HeroBase, table=True):
 class HeroPublic(HeroBase):
     id: int
 
+
+class HeroCreate(HeroBase):
+    secret_name: str
+
+# not necessarily needed to inherit from HeroBase as we're re-declaring everything
+class HeroUpdate(HeroBase):
+    secret_name: str | None = None
+    name: str | None = None
+    age: int | None = None
+
+
 sqlite_file_name = "database.db"
 sqlite_url = f'sqlite:///{sqlite_file_name}'
 
