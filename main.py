@@ -1,31 +1,8 @@
 from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, Session, SQLModel, create_engine, select
+from sqlmodel import Session, SQLModel, create_engine, select
 
-
-class HeroBase(SQLModel):
-    name: str = Field(index=True)
-    age: int | None = Field(default=None, index=True)
-
-
-class Hero(HeroBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    secret_name: str
-
-
-class HeroPublic(HeroBase):
-    id: int
-
-
-class HeroCreate(HeroBase):
-    secret_name: str
-
-# not necessarily needed to inherit from HeroBase as we're re-declaring everything
-class HeroUpdate(HeroBase):
-    secret_name: str | None = None
-    name: str | None = None
-    age: int | None = None
-
+from models import Hero, HeroCreate, HeroPublic, HeroUpdate
 
 sqlite_file_name = "database.db"
 sqlite_url = f'sqlite:///{sqlite_file_name}'
