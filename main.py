@@ -35,7 +35,7 @@ def on_startup():
 
 
 @app.post('/heroes/')
-def create_hero(hero: Hero, session: Session) -> Hero:
+def create_hero(hero: Hero, session: SessionDep) -> Hero:
     session.add(hero)
     session.commit()
     session.refresh(hero)
