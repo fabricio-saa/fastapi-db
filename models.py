@@ -18,7 +18,7 @@ class HeroBase(SQLModel):
 class Hero(HeroBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
     secret_name: str
-    team_id: Optional[int] = Field(default=None, foreign_key='team.id')
+    team_id: Optional[int] = Field(default=None, foreign_key='team.id', ondelete='SET NULL')
     team: Team | None = Relationship(back_populates="heroes")
 
 
