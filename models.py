@@ -2,6 +2,14 @@ from sqlmodel import Field, SQLModel, Relationship
 from typing import Optional
 
 
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    # username will be an email
+    username: str = Field(index=True, unique=True)
+    password: str
+
+
+
 class TeamBase(SQLModel):
     name: str = Field(index=True)
 
