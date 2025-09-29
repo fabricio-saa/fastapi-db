@@ -22,11 +22,10 @@ def get_session():
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-app = FastAPI()
-
-@app.on_event("startup")
-def on_startup():
+def lifespan():
     create_db_and_tables()
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.post('/heroes/', response_model=HeroPublic)
