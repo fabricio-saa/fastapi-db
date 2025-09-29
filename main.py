@@ -1,29 +1,22 @@
+from contextlib import asynccontextmanager
 from typing import Annotated
+
 from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Session, SQLModel, create_engine, select
+from sqlmodel import Session, select
 
-from models import Hero, HeroCreate, HeroPublic, HeroUpdate
+from .models import Hero, HeroCreate, HeroPublic, HeroUpdate
+from .db import create_db_and_tables, engine, get_session
 
-sqlite_file_name = "database.db"
-sqlite_url = f'sqlite:///{sqlite_file_name}'
-
-connect_args = {'check_same_thread': False}
-engine = create_engine(sqlite_url, connect_args=connect_args) # this is what holds the connection to the db
-# only need one db in this case so we only have one engine
-
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-# the session allows to store the objects in memory
-# this will be injected as a dependency so that each request has a session to communicate with the db through the engine
-def get_session():
-    with Session(engine) as session:
-        yield session
 
 SessionDep = Annotated[Session, Depends(get_session)]
 
-def lifespan():
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     create_db_and_tables()
+    yield
+    engine.dispose()
+
 
 app = FastAPI(lifespan=lifespan)
 
