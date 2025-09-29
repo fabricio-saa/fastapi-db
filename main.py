@@ -5,6 +5,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
 
+from middleware.middleware import HiByeMiddleware
 from models import Hero, HeroCreate, HeroPublic, HeroUpdate, Team, TeamWithHeroesCreate, TeamWithHeroesRead
 from db import create_db_and_tables, engine, get_session
 
@@ -20,6 +21,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(HiByeMiddleware)
 
 
 @app.post('/heroes/', response_model=HeroPublic)
