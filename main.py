@@ -4,10 +4,9 @@ from typing import Annotated
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Session, select
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import selectinload
 
-from .models import Hero, HeroCreate, HeroPublic, HeroUpdate, Team, TeamWithHeroesCreate, TeamWithHeroesRead
-from .db import create_db_and_tables, engine, get_session
+from models import Hero, HeroCreate, HeroPublic, HeroUpdate, Team, TeamWithHeroesCreate, TeamWithHeroesRead
+from db import create_db_and_tables, engine, get_session
 
 
 SessionDep = Annotated[Session, Depends(get_session)]

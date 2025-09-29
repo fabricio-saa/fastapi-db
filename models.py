@@ -4,8 +4,6 @@ from typing import Optional
 
 class TeamBase(SQLModel):
     name: str = Field(index=True)
-    heroes: list['Hero'] = Relationship(back_populates='team')
-
 
 class Team(TeamBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
