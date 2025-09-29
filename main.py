@@ -3,8 +3,10 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from sqlmodel import Session, select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 
-from .models import Hero, HeroCreate, HeroPublic, HeroUpdate
+from .models import Hero, HeroCreate, HeroPublic, HeroUpdate, Team, TeamWithHeroesCreate, TeamWithHeroesRead
 from .db import create_db_and_tables, engine, get_session
 
 
@@ -58,3 +60,40 @@ def update_hero(hero_id: int, session: SessionDep, hero: HeroUpdate):
     session.commit()
     session.refresh(hero_db)
     return hero_db
+
+
+@app.post('/team', response_model=TeamWithHeroesRead)
+def create_team_with_heroes(team: TeamWithHeroesCreate, session: SessionDep):
+    heroes_input = team.pop('heroes', [])
+    try:
+        team = Team(name=team.name)
+        session.add(team)
+        # flush() sends the INSERT for Team so team.id is populated, while still inside the transaction.
+        session.flush()
+
+        heroes = [
+            HeroCreate(
+                name=h.name,
+                secret_name=h.secret_name,
+                team_id=team.id
+            )
+            for h in heroes_input
+        ]
+        session.add_all(heroes)
+        session.commit()
+    except IntegrityError as e:
+        session.rollback()
+        # map DB constraint messages to a friendly 400
+        raise HTTPException(status_code=400, detail="Integrity error creating team/heroes")
+
+
+    persisted_team  = session.exec(
+        select(Team).where(Team.id==team.id).options(selectinload=Team.heroes)
+    ).one()
+
+    return TeamWithHeroesRead(
+        id=persisted_team.id,
+        name=persisted_team.name,
+        heroes=[HeroPublic(id=h.id, name=h.name) for h in persisted_team.heroes]
+    )
+
